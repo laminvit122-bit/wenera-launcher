@@ -14,13 +14,20 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      - name: Export screens
+        run: cd pojav/app_pojavlauncher/src/main && zip -r $GITHUB_WORKSPACE/screens.zip res/layout AndroidManifest.xml
       - name: Apply theme
         run: |
           unzip -o overlay.zip -d overlay
           cp -r overlay/res/. pojav/app_pojavlauncher/src/main/res/
+          if [ -f wenera_theme.py ]; then python3 wenera_theme.py pojav/app_pojavlauncher/src/main/res; fi
       - name: Build
         working-directory: pojav
         run: ./gradlew :app_pojavlauncher:assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: screens
+          path: screens.zip
       - uses: actions/upload-artifact@v4
         with:
           name: wenera-launcher-apk
